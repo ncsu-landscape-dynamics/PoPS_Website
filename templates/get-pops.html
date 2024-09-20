@@ -70,6 +70,8 @@
                                             updates</small></label>
                                     <div><small id="emailHelp"> </small></div>
                                 </div>
+                                <script src='https://www.google.com/recaptcha/api.js'></script>
+                                <div class="g-recaptcha" data-sitekey="6Ld4FoYaAAAAAGNB0WwFf0T8hsoer9sM0bdJHjEB"></div>
                             </form>
                 </div>
             </div>
@@ -134,9 +136,16 @@ $("#add_email").on('submit', function () {
     type : "POST", // http method
     success: function (data) {
       console.log('Success')
+      if (data.error) {
+        $('#emailHelp').html('Error: ' + data.error);
+      $( "#emailHelp" ).addClass( 'text-danger' );
+      $( "#emailHelp" ).removeClass( 'text-muted' );
+      }
+      else {
       $('#emailHelp').html('<i class="fas fa-check text-success"></i> Please check ' + data.email + ' to confirm');
       $( "#emailHelp" ).removeClass( 'text-danger' );
       $( "#emailHelp" ).addClass( 'text-muted' );
+      }
     },
     error : function(xhr,errmsg,err) {
     console.log('There was an error writing to the database: ' + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console

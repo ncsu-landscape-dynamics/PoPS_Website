@@ -1,5 +1,5 @@
 function updateDrawColor (year_count) {
-  console.log('Updating draw color to ' + colors[year_count-1]);
+  //console.log('Updating draw color to ' + colors[year_count-1]);
   disableDrawTools();
   enableDrawTools();
   map.removeControl(draw);

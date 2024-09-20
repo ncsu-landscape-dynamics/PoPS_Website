@@ -313,6 +313,15 @@ div.timeline-active div a {
 }
 
 /* LEGEND */
+
+#displayed-data-legend-container {
+  position: absolute;
+  width: 340px;
+  height: 80px;
+  top: 90px;
+  left: 0px;
+}
+
 #legend-container {
   position: relative;
   top: 0px;
@@ -335,13 +344,6 @@ div.timeline-active div a {
   padding-top: 0px;
 }
 
-#displayed-data-legend-container {
-  position: absolute;
-  width: 300px;
-  height: 80px;
-  top: 90px;
-  left: 0px;
-}
 
 /* YEAR SLIDER */
 #year-slider-container {
@@ -435,6 +437,13 @@ div.timeline-active div a {
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ebf1f6), color-stop(50%, #abd3ee), color-stop(51%, #89c3eb), color-stop(100%, #d5ebfb));
 }
 
+/* DISPLAY OPTIONS PANEL */
+#display-options-panel {
+  position: relative;
+  background-color: black;
+  font-size: 0.85em;
+}
+
 /* MAP LAYER CHECKBOXES */
 #additional_map_checkboxes {
   position: absolute;
@@ -448,7 +457,7 @@ div.timeline-active div a {
 }
 
 #host_map_checkbox {
-  background-color: rgb(99, 245, 66, 0.3)
+  /*background-color: rgb(99, 245, 66, 0.3) */
 }
 
 /* EDIT POLYGONS */
@@ -459,14 +468,14 @@ div.timeline-active div a {
   color: white;
   background-color: black;
   opacity: 0.8;
-  width: 220px;
+  width: 280px;
   border-radius: 4px;
 }
 
 /* BUDGET */
 #budget_background_layer,
 #displayed-data-legend-container {
-  background-color: #2e2e2e;
+  background-color:#2e2e2e;
   /*#191a1a;*/
   opacity: 0.75;
 }
@@ -530,7 +539,8 @@ div.timeline-active div a {
 
 /* RIGHT SIDE PANEL */
 #side-panel-buttons button,
-#hide_details_button {
+#hide_details_button,
+#show_display_options_button {
   background-color: transparent;
   color: #a0a8bd;
 }
@@ -548,7 +558,8 @@ div.timeline-active div a {
 }
 
 #side-panel-buttons button:hover,
-#hide_details_button:hover {
+#hide_details_button:hover,
+#show_display_options_button:hover {
   background-color: transparent;
   color: white;
 }
@@ -603,25 +614,39 @@ div#run-preview-container button {
   border-style: outset;
   border-color: #212529;
   color: #0b0d0e;
-  font-size: 1.2em;
+  font-size: 1em;
   position: relative;
 }
 
-div#run-preview-container button a {
+div.user_count {
+  float: left;
   color: #0b0d0e;
 }
 
-div#run-preview-container button.active a {
-  color: #070909;
+div.run_button_links {
+  float: right;
 }
 
-div#run-preview-container button:hover a {
+button div.run_button_links a {
+  color: #0b0d0e;
+}
+
+button.active div.run_button_links a {
+  color: #1c2121;
+}
+
+button:hover div.run_button_links a,
+div.run_button_links:hover {
   color: #a0a8bd;
 }
+div.comparison_plot {
+  margin-top: 1.5em;
+}
+
 
 div#run-preview-container button:hover,
 div#run-preview-container button.active {
-  background-color: #070909;
+  background-color: #1c2121;
   border-style: inset;
 }
 
@@ -774,4 +799,46 @@ input#id_name {
   border: 3px solid #555;
   background-color: #212529;
   color: white;
+}
+
+
+/* MAPBOX POPUP tweaks */
+.mapboxgl-popup-close-button {
+  display: none;
+}
+
+.mapboxgl-popup-content {
+  font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
+  padding: 0;
+  width: 140px;
+  background: black;
+  color: darkcyan;
+}
+
+.mapboxgl-popup-content-wrapper {
+  padding: 1%;
+}
+
+.mapboxgl-popup-content p {
+  margin: 0;
+  display: block;
+  padding: 0px 0px;
+  font-weight: 100;
+}
+
+.mapboxgl-popup-content div {
+  padding: 0px 0px;
+  font-weight: 700;
+}
+
+.mapboxgl-container .leaflet-marker-icon {
+  cursor: pointer;
+}
+
+.mapboxgl-popup-anchor-top > .mapboxgl-popup-content {
+  margin-top: 15px;
+}
+
+.mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
+  border-bottom-color: black;
 }

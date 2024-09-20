@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
   {% block jquery_source %}
   <script src="{% static 'js/jquery.min.js' %}"></script>
   {% endblock %}
@@ -20,10 +21,39 @@
     <div class="row justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-6">
       <form id="submit-session" submit-session-url="{% url 'save_session_data' %}" method="post">{% csrf_token %} 
+      <div class="row">
             {% include "pops/include/form_field.html" with field=form.case_study form_class="col-12 dark_input" %} 
             {% include "pops/include/form_field.html" with field=form.name form_class="col-12 dark_input" %}
-            {% include "pops/include/form_field.html" with field=form.description form_class="col-12 dark_input" %}
-<div class="row px-3">
+            {% include "pops/include/form_field.html" with field=form.description form_class="col-12 dark_input" %} 
+            <!-- Final forecast date-->
+            <div class="form-group col-6 dark_input">
+              <label for="{{ form.final_date.id_for_label }}">{{ form.final_date.label }}</label>
+              <div class="input-group ">
+                <input class="form-control dark_input" type="date" value="{{ case_study.last_forecast_date|date:'Y-m-d' }}"
+                  data-toggle="tooltip" data-placement="top" title="What is the last date to run simulations?" required
+                  id="id_final_date" min="{{ case_study.first_forecast_date|date:'Y-m-d' }}"
+                  max="{{ case_study.last_forecast_date|date:'Y-m-d' }}">
+              </div>
+              {% for error in form.final_date.errors %}
+              <div class=" text-danger pt-0" style="font-size:0.8em">
+                <strong>{{ error|escape }}</strong>
+              </div>
+              {% endfor %}
+            </div>
+            {% include "pops/include/form_field.html" with field=form.weather form_class="col-6 dark_input" %} 
+            {% include "pops/include/form_field.html" with field=form.reproductive_rate form_class="col-6 dark_input" %} 
+            {% include "pops/include/form_field.html" with field=form.distance_scale form_class="col-6 dark_input" %} 
+            {% include "pops/include/form_field.html" with field=form.public form_class="col-12 dark_input" %} 
+            {{ distance_scale.values }}
+            
+{% for d in distance_scale.values %}
+  {{ d }},
+{% endfor %}
+
+
+</div>
+
+{% comment %} <div class="row px-3">
             <div id="reproductive-rate-container" class="col-sm-6 parameter-selector-plot pt-2">
                       <div class="py-0">Max number of dispersers: <output id="displayRate">{{ expected_reproductive_rate.value }}</output></div>
                       <div id="reproductive_rate_plot" style="height:100px; width:250px;"></div>
@@ -58,7 +88,11 @@
 
 </div>
 
-      </div>
+      </div> {% endcomment %}
+                <div class="text-center py-2">
+            <button id="submit-session-button" class="btn btn-info btn-lg" type="submit">Create New Session</button>
+            <div class="text-muted py-4">After your session is created, you will be redirected to the PoPS dashboard.</div>
+          </div>    
       </form>
 
 

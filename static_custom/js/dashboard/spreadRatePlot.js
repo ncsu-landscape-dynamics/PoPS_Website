@@ -1,8 +1,8 @@
 function spreadRatePlot(last_year) {
   var data = [];
-  console.log('Spread rate inside function: ')
-  console.log(spread_rate);
-  console.log(spread_rate.length);
+  //console.log('Spread rate inside function: ')
+  //console.log(spread_rate);
+  //console.log(spread_rate.length);
   var slider_year = parseInt($('#year-slider').find('input').val());
   var year_count = parseInt($(".timeline-year-container.year_active").attr('data-year-counter'));
   if (year_count == 0) {
@@ -10,13 +10,13 @@ function spreadRatePlot(last_year) {
   } else {
     year_color = colors[year_count - 1];
   }
-  console.log(slider_year)
+  //console.log(slider_year)
 
   if (slider_year > last_year) {
     $('#spread_rate_title span').text(slider_year);
     for (var i = 0; i < spread_rate.length; i++) {
       if (spread_rate[i].year == slider_year) {
-        console.log(spread_rate[i]);
+        //console.log(spread_rate[i]);
         data.push({
           type: "scatterpolar",
           r: [parseFloat(spread_rate[i].spreadrate__east_rate), parseFloat(spread_rate[i].spreadrate__north_rate), parseFloat(spread_rate[i].spreadrate__west_rate), parseFloat(spread_rate[i].spreadrate__south_rate), parseFloat(spread_rate[i].spreadrate__east_rate)],
@@ -50,8 +50,8 @@ function spreadRatePlot(last_year) {
 
     });
   }
-  console.log(data);
-  console.log('Max spread rate: ' + max_spread_rate);
+  //console.log(data);
+  //console.log('Max spread rate: ' + max_spread_rate);
 
   var layout = {
     font: {

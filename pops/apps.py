@@ -2,4 +2,7 @@ from django.apps import AppConfig
 
 
 class PopsConfig(AppConfig):
-    name = 'pops'
+    name = "pops"
+
+    def ready(self):
+        from pops import receivers

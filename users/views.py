@@ -1,4 +1,7 @@
 # users/views.py
+import urllib
+import json
+
 from django.views.generic import ListView, TemplateView, UpdateView, CreateView
 from django.conf import settings
 
@@ -182,50 +185,89 @@ class AddNewEmail(CreateView):
 
     def form_valid(self, form):
         print('form_valid')
+        self.object = form.save(commit=False)
         # We make sure to call the parent's form_valid() method because
         # it might do some processing (in the case of CreateView, it will
         # call form.save() for example).
         # Make any changes to form content before calling super.
         # form.instance.created_by = self.request.user
-        response = super().form_valid(form)
-        current_site = get_current_site(self.request)
-        # confirmation email subject
-        subject = 'Confirm your email for PoPS'
+        #response = super().form_valid(form)
+        ''' Begin reCAPTCHA validation '''
+        recaptcha_response = self.request.POST.get('g-recaptcha-response')
+        print(recaptcha_response)
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req =  urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        print(response)
+        result = json.loads(response.read().decode())
+        print(result)
+        ''' End reCAPTCHA validation '''
         email_object = self.object
-        # create confirmation email message from our template and variables
-        message = render_to_string('accounts/email_activation_email.html', {
-            # get current site domain
-            'domain': current_site.domain,
-            # create an encoded uid to use in the email confirmation link (
-            # this encodes the user's email. When the user
-            # clicks on the link, this value gets passed to
-            # the activate view and decoded to determine the email.
-            'uid': urlsafe_base64_encode(force_bytes(email_object.pk)),
-            # create a token to use in the email confirmation link. The
-            # token is generated in users/tokens.py and is a combination
-            # of the primary key and email_confirmed status. This
-            # value is passed to activate view when user clicks on the link.
-            # After the email is confirmed, the activation link will no longer
-            # work because the token will no longer be valid.
-            'token': account_activation_token.make_token(email_object),
-        })
-        send_mail(
-            subject,
-            message,
-            "PoPS Model <noreply@popsmodel.org>",
-            [email_object.email],
-            fail_silently=False,
-        )
+
+        if result['success']:
+            form.save()
+            current_site = get_current_site(self.request)
+            # confirmation email subject
+            subject = 'Confirm your email for PoPS'
+            email_object = self.object
+            # create confirmation email message from our template and variables
+            message = render_to_string('accounts/email_activation_email.html', {
+                # get current site domain
+                'domain': current_site.domain,
+                # create an encoded uid to use in the email confirmation link (
+                # this encodes the user's email. When the user
+                # clicks on the link, this value gets passed to
+                # the activate view and decoded to determine the email.
+                'uid': urlsafe_base64_encode(force_bytes(email_object.pk)),
+                # create a token to use in the email confirmation link. The
+                # token is generated in users/tokens.py and is a combination
+                # of the primary key and email_confirmed status. This
+                # value is passed to activate view when user clicks on the link.
+                # After the email is confirmed, the activation link will no longer
+                # work because the token will no longer be valid.
+                'token': account_activation_token.make_token(email_object),
+            })
+            send_mail(
+                subject,
+                message,
+                "PoPS Model <noreply@popsmodel.org>",
+                [email_object.email],
+                fail_silently=False,
+            )
+        else:
+            print('Recaptcha failed')
+
+
         if self.request.is_ajax():
-            print('Response is ajax')
-            data = {
-                'email': email_object.email,
-            }
+            if result['success']:
+                print('Response is ajax')
+                data = {
+                    'email': email_object.email,
+                }
+            else:
+                data = {
+                    'error': 'reCAPTCHA failed'
+                }
             return JsonResponse(data)
         else:
-            print('Response NOT ajax')
-            return redirect('account_activation_sent')
+            if result['success']:
+                print('Response NOT ajax')
+                return redirect('account_activation_sent')
+            else:
+                return redirect('subscribe_email_error')
 
+class AddNewEmailError(AddNewEmail):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["error"] = 'reCAPTCHA failed'
+        return context
+    
 
 class DeleteEmail(TemplateView):
 

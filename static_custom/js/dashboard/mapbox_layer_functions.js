@@ -1,14 +1,14 @@
-function newFireLayer(map_data, year, max_legend_value) {
-  console.log("Adding new layer for year " + year);
-  map.addSource(year, {
+function newFireLayer(map_data, layer_name, max_legend_value, property) {
+  //console.log("Adding new layer for year " + layer_name);
+  map.addSource(layer_name, {
     'type': 'geojson',
     /*many types of data can be added, such as geojson, vector tiles or raster data*/
     'data': map_data
   });
   map.addLayer({
-    "id": year,
+    "id": layer_name,
     "type": 'fill',
-    "source": year,
+    "source": layer_name,
     "layout": {
       'visibility': 'none',
     },
@@ -16,7 +16,7 @@ function newFireLayer(map_data, year, max_legend_value) {
       'fill-color': [
         'interpolate',
         ['linear'],
-        ['get', 'outputs'],
+        ['get', property],
         0.0 * max_legend_value, '#CC0000',
         0.1 * max_legend_value, '#D61900',
         0.2 * max_legend_value, '#E03300',
@@ -32,7 +32,7 @@ function newFireLayer(map_data, year, max_legend_value) {
       'fill-outline-color': [
         'interpolate',
         ['linear'],
-        ['get', 'outputs'],
+        ['get', property],
         0.0 * max_legend_value, '#CC0000',
         0.1 * max_legend_value, '#D61900',
         0.2 * max_legend_value, '#E03300',
@@ -48,7 +48,7 @@ function newFireLayer(map_data, year, max_legend_value) {
       'fill-opacity': [
         'interpolate',
         ['linear'],
-        ['get', 'outputs'],
+        ['get', property],
         0.0 * max_legend_value, 0.0,
         0.001 * max_legend_value, map_fill_opacity,
         0.2 * max_legend_value, map_fill_opacity,
@@ -65,17 +65,17 @@ function newFireLayer(map_data, year, max_legend_value) {
   }, 'waterway-label');
 };
 
-function newMagmaLayer(map_data, year, max_legend_value) {
-  console.log("Adding new magma layer for year " + year);
-  map.addSource(year, {
+function newMagmaLayer(map_data, layer_name, max_legend_value, property) {
+  //console.log("Adding new magma layer for year " + layer_name);
+  map.addSource(layer_name, {
     'type': 'geojson',
     /*many types of data can be added, such as geojson, vector tiles or raster data*/
     'data': map_data
   });
   map.addLayer({
-    "id": year,
+    "id": layer_name,
     "type": 'fill',
-    "source": year,
+    "source": layer_name,
     "layout": {
       'visibility': 'none',
     },
@@ -83,7 +83,7 @@ function newMagmaLayer(map_data, year, max_legend_value) {
       'fill-color': [
         'interpolate',
         ['linear'],
-        ['get', 'outputs'],
+        ['get', property],
         0.0 * max_legend_value, '#000005',
         0.1 * max_legend_value, '#080616',
         0.2 * max_legend_value, '#1E0848',
@@ -99,7 +99,7 @@ function newMagmaLayer(map_data, year, max_legend_value) {
       'fill-outline-color': [
         'interpolate',
         ['linear'],
-        ['get', 'outputs'],
+        ['get', property],
         0.0 * max_legend_value, '#000005',
         0.1 * max_legend_value, '#080616',
         0.2 * max_legend_value, '#1E0848',
@@ -115,7 +115,7 @@ function newMagmaLayer(map_data, year, max_legend_value) {
       'fill-opacity': [
         'interpolate',
         ['linear'],
-        ['get', 'outputs'],
+        ['get', property],
         0.0 * max_legend_value, 0.0,
         0.001 * max_legend_value, map_fill_opacity,
         0.2 * max_legend_value, map_fill_opacity,
@@ -133,7 +133,7 @@ function newMagmaLayer(map_data, year, max_legend_value) {
 };
 
 function hostmapLayer(data) {
-  console.log("Adding host map layer");
+  //console.log("Adding host map layer");
   map.addSource('host_map', {
       'type': 'geojson',
       'data': data

@@ -6,20 +6,22 @@ from django.db.models import Prefetch
 from ..models import *
 from ..serializers import *
 
+
 class CaseStudyViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows case studies to be viewed or edited.
     """
-    queryset = CaseStudy.objects.prefetch_related(
-        Prefetch('host_set', queryset=Host.objects.select_related('mortality','hostdata')),
-        Prefetch('pest_set',queryset=Pest.objects.prefetch_related('infectedtodiseased_set',
-        'cryptictoinfected_set','anthropogenicdistance_set','naturaldistance_set','percentnaturaldistance_set'
-        ).select_related('vector','initialinfestation','priortreatment')),
-        Prefetch('weather__temperature__temperaturereclass_set'),
-        Prefetch('weather__precipitation__precipitationreclass_set')).select_related(
-            'created_by','allplantsdata','weather__wind','weather__seasonality',
-            'weather__lethaltemperature','weather__temperature','weather__temperature__temperaturepolynomial',
-            'weather__precipitation', 'weather__precipitation__precipitationpolynomial').all()
+    # queryset = CaseStudy.objects.prefetch_related(
+    #     Prefetch('host_set', queryset=Host.objects.select_related('mortality','hostdata')),
+    #     Prefetch('pest_set',queryset=Pest.objects.prefetch_related('infectedtodiseased_set',
+    #     'cryptictoinfected_set','anthropogenicdistance_set','naturaldistance_set','percentnaturaldistance_set'
+    #     ).select_related('vector','initialinfestation','priortreatment')),
+    #     Prefetch('weather__temperature__temperaturereclass_set'),
+    #     Prefetch('weather__precipitation__precipitationreclass_set')).select_related(
+    #         'created_by','allplantsdata','weather__wind','weather__seasonality',
+    #         'weather__lethaltemperature','weather__temperature','weather__temperature__temperaturepolynomial',
+    #         'weather__precipitation', 'weather__precipitation__precipitationpolynomial').all()
+    queryset = CaseStudy.objects.all()
     serializer_class = CaseStudySerializer
     permission_classes = (permissions.AllowAny,)
 
@@ -38,6 +40,7 @@ class RunCollectionViewSet(viewsets.ModelViewSet):
     queryset = RunCollection.objects.prefetch_related().all()
     serializer_class = RunCollectionSerializer
     permission_classes = (permissions.AllowAny,)
+
 
 class RunCollectionDetailViewSet(viewsets.ModelViewSet):
     """
@@ -102,6 +105,7 @@ class SessionModelWriteViewSet(viewsets.ModelViewSet):
     serializer_class = SessionModelWriteSerializer
     permission_classes = (permissions.AllowAny,)
 
+
 class SessionDetailViewSet(viewsets.ModelViewSet):
 
     queryset = Session.objects.prefetch_related('runcollection_set').all()
@@ -116,6 +120,7 @@ class RunModelWriteViewSet(viewsets.ModelViewSet):
     serializer_class = RunModelWriteSerializer
     permission_classes = (permissions.AllowAny,)
 
+
 class RunDetailViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows runs to be viewed or edited.
@@ -124,3 +129,35 @@ class RunDetailViewSet(viewsets.ModelViewSet):
     serializer_class = RunDetailSerializer
     permission_classes = (permissions.AllowAny,)
 
+
+class RunRDataViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows runs to be viewed or edited.
+    """
+    queryset = Run.objects.all()
+    serializer_class = RunRDataSerializer
+    permission_classes = (permissions.AllowAny,)
+
+class OutputSpreadMapViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows runs to be viewed or edited.
+    """
+    queryset = Output.objects.all()
+    serializer_class = OutputSpreadMapSerializer
+    permission_classes = (permissions.AllowAny,)
+
+class CaseStudyRDataViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows runs to be viewed or edited.
+    """
+    queryset = CaseStudy.objects.all()
+    serializer_class = CaseStudyRDataSerializer
+    permission_classes = (permissions.AllowAny,)
+
+class CaseStudyAdvancedNetworkFileViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows runs to be viewed or edited.
+    """
+    queryset = CaseStudy.objects.all()
+    serializer_class = CaseStudyAdvancedNetworkFileSerializer
+    permission_classes = (permissions.AllowAny,)

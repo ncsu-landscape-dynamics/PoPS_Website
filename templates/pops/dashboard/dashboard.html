@@ -38,6 +38,8 @@
   var max_number=100;
   var max_area=100;
   var max_cost=100;
+  var displayed_data_types = ["_forecast","_minimum","_median","_maximum","_mean","_stdev"];
+
 </script>
 <!-- FUNCTIONS  -->
 <title>PoPS</title>
@@ -60,11 +62,11 @@
     </a>
     <div class="collapse navbar-collapse mb-0 mt-0" id="navbarTogglerDemo03">
       <span id="session_title" class="pb-0 navbar-text d-none d-md-inline-block mr-auto text-bottom">
-        <strong>Session:</strong> {{ session.name|truncatechars:55  }} <a href="#" data-toggle="tooltip"
+        <strong>Session:</strong> {{ session.name|truncatechars:55  }}  <a href="#" data-toggle="tooltip"
           title="Edit session name will be available in the future" data-placement="right"><i style="font-size:0.5em;"
             class="fas fa-pencil-alt align-top"></i></a>
         <span id="case_study_title" class="text-muted d-none d-lg-inline-block" style="font-size:0.8em;">
-          ({{ session.case_study }} {{ session.case_study.end_year }} <a
+          ({{ session.case_study }} <a
             href="{% url 'case_study_review' pk=session.case_study.pk %}" data-toggle="tooltip"
             title="View case study detail page" data-placement="right"><i style="font-size:0.6em"
               class="fas fa-info-circle align-top text-secondary"></i></a>)
@@ -104,7 +106,7 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="{% url 'workspace' %}">My Workspace</a>
-            <a class="dropdown-item" href="{% url 'FAQs' %}">FAQs</a>
+            <a class="dropdown-item" href="#">FAQs</a>
           </div>
         </li>
       </ul>
@@ -145,7 +147,7 @@
                       </span>
                       <span class="submit_run_button">
                         <a href="#" data-toggle="tool"
-                          title="Run PoPS model for {{ session.case_study.end_year }} management."><i
+                          title="Run PoPS model for **CASE STUDY END YEAR** management."><i
                             class="fas fa-play-circle"></i></a>
                       </span>
                     </div>
@@ -195,7 +197,7 @@
                   id="id_management_area">
                 <input type="hidden" value="0" name="management_cost" cols="40" rows="10" class="form-control"
                   id="id_management_cost">
-                <input type="hidden" value="4" name="run_collection" cols="40" rows="10" class="form-control"
+                <input type="hidden" value="0" name="run_collection" cols="40" rows="10" class="form-control"
                   id="id_run_collection">
               </form>              
               <!-- MAP -->
@@ -204,102 +206,192 @@
                 title="Show details."><i class="fas fa-chevron-left"></i></button>
               <!-- MAP LEGEND -->
               <div id="displayed-data-legend-container">
-              <div id="legend-container" data-toggle="tool" title="Legend for currently displayed data">
-                <div class="my-0">
-                  <strong id="display_year_forecast" >Field observations </strong>
-                  <small id="legend_description"> (Number of detections)</small>
-                </div>
-                <div id="historic-legend-container" class="my-0">
-                  <div>
-                    <span class="legend-label mr-1">0</span>
-                    <div class="legend-color" style="background-color:#CC0000; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#D61900; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#E03300; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#EA4C00; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#F46600; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FF8000; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FF9F19; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFBF33; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFDF4C; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFFF66; opacity:0.85"></div>
-                    <div class="legend-color" style="background-color:#FFFFCC; opacity:0.9"></div>
-                    <div class="legend-label ml-1">{{ session.max_value }}+</div>
-                    <div style="clear: left;">
+                <div id="legend-container" data-toggle="tool" title="Legend for currently displayed data">
+                  <div class="my-0">
+                    <strong id="display_year_forecast">Field observations </strong>
+                    <small id="legend_description"> (Number of detections)</small>
+                  </div>
+                  <div id="historic-legend-container" class="my-0">
+                    <div style="height: 20px; width: 280px;">
+                      <span class="legend-label mr-1">0</span>
+                      <div class="legend-color" style="background-color:#CC0000; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#D61900; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#E03300; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#EA4C00; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#F46600; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FF8000; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FF9F19; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFBF33; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFDF4C; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFFF66; opacity:0.85"></div>
+                      <div class="legend-color" style="background-color:#FFFFCC; opacity:0.9"></div>
+                      <div class="legend-label ml-1">{{ session.max_value }}+</div>
+                      <div style="clear: left;">
+                      </div>
+                    </div>
+                  </div>
+                  <div id="occurence-legend-container" class="my-0">
+                    <div style="height: 20px; width: 280px;">
+                      <span class="legend-label mr-1">0</span>
+                      <div class="legend-color" style="background-color:#CC0000; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#D61900; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#E03300; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#EA4C00; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#F46600; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FF8000; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FF9F19; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFBF33; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFDF4C; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFFF66; opacity:0.8"></div>
+                      <div class="legend-color" style="background-color:#FFFFCC; opacity:0.8"></div>
+                      <div class="legend-label ml-1">{{ session.max_value }}+</div>
+                      <div style="clear: left;">
+                      </div>
+                    </div>
+                  </div>
+                  <div id="probability-legend-container" class="my-0">
+                    <div style="height: 20px; width: 280px;">
+                      <span class="legend-label mr-1">0</span>
+                      <div class="legend-color" style="background-color:#000005; opacity:0.467"></div>
+                      <div class="legend-color" style="background-color:#080616; opacity:0.5"></div>
+                      <div class="legend-color" style="background-color:#1E0848; opacity:0.533"></div>
+                      <div class="legend-color" style="background-color:#43006A; opacity:0.567"></div>
+                      <div class="legend-color" style="background-color:#6B116F; opacity:0.6"></div>
+                      <div class="legend-color" style="background-color:#981D69; opacity:0.633"></div>
+                      <div class="legend-color" style="background-color:#C92D59; opacity:0.676"></div>
+                      <div class="legend-color" style="background-color:#ED504A; opacity:0.7"></div>
+                      <div class="legend-color" style="background-color:#FA8657; opacity:0.733"></div>
+                      <div class="legend-color" style="background-color:#FBC17D; opacity:0.767"></div>
+                      <div class="legend-color" style="background-color:#FCFFB2; opacity:0.8"></div>
+                      <div class="legend-label ml-1">100%</div>
+                      <div style="clear: left;">
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div id="occurence-legend-container" class="my-0">
-                  <div style="height: 20px; width: 280px;">
-                    <span class="legend-label mr-1">0</span>
-                    <div class="legend-color" style="background-color:#CC0000; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#D61900; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#E03300; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#EA4C00; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#F46600; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FF8000; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FF9F19; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFBF33; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFDF4C; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFFF66; opacity:0.8"></div>
-                    <div class="legend-color" style="background-color:#FFFFCC; opacity:0.8"></div>
-                    <div class="legend-label ml-1">{{ session.max_value }}+</div>
-                    <div style="clear: left;">
+                <div id="year-slider-container" data-toggle="tool" title="Currently displayed year">
+                  <div id="display_year_label" class="py-0 ">
+                    <output id="displayYear">{{ historic_data.last.year }}</output>
+                  </div>
+                  <div id="year-slider" class="range range-info">
+                    <div class="slider-bar">
+                      <div class="slider-bar-colors historic-years" style="width: 55px;"></div>
+                      <div class="slider-bar-colors managed-years" style="width: 2px;"></div>
+                      <div class="slider-bar-colors forecast-years"></div>
+                    </div>
+                    <input class="year-range" type="range" name="range" min="{{ historic_data.0.year }}"
+                      max="{{ historic_data.last.year }}" step="1" value="{{ historic_data.last.year }}"
+                      onchange="displayYear.value=value">
+                  </div>
+                </div>
+                <button id="show_display_options_button" type="button" class="btn btn-sm" data-toggle="tool"
+                  title="Display options"><i class="fas fa-layer-group"></i> <i id="display_options_button_icon"
+                    class="fas fa-chevron-down"></i></button>
+                <!-- DISPLAY OPTIONS PANEL -->
+                <div id="display-options-panel" class="">
+                  <div id="displayed-data-options" class="p-2 border border-secondary">
+                    <div>Displayed forecast data:</div>
+                    <div class="form-check">
+                      <input class="form-check-input" value="_forecast" type="radio" name="displayed_data_type"
+                        id="display_forecast" data-name="Forecast">
+                      <label class="form-check-label" for="display_forecast">
+                        Probability of occurence
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" value="_mean" type="radio" name="displayed_data_type"
+                        id="display_mean" data-name="Mean">
+                      <label class="form-check-label" for="display_mean">
+                        Mean detections
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" value="_minimum" type="radio" name="displayed_data_type"
+                        id="display_minimum" data-name="Minimum">
+                      <label class="form-check-label" for="display_minimum">
+                        Minimum detections
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" value="_maximum" type="radio" name="displayed_data_type"
+                        id="display_max" data-name="Maximum">
+                      <label class="form-check-label" for="display_max">
+                        Maximum detections
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" value="_stdev" type="radio" name="displayed_data_type"
+                        id="display_stdev" data-name="Standard deviation">
+                      <label class="form-check-label" for="display_stdev">
+                        Standard deviation detections
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" value="_median" type="radio" name="displayed_data_type"
+                        id="display_median" data-name="Median" checked>
+                      <label class="form-check-label" for="display_median">
+                        Current simulated state
+                      </label>
                     </div>
                   </div>
-                </div>
-                <div id="probability-legend-container" class="my-0">
-                  <div style="height: 20px; width: 280px;">
-                    <span class="legend-label mr-1">0</span>
-                    <div class="legend-color" style="background-color:#000005; opacity:0.467"></div>
-                    <div class="legend-color" style="background-color:#080616; opacity:0.5"></div>
-                    <div class="legend-color" style="background-color:#1E0848; opacity:0.533"></div>
-                    <div class="legend-color" style="background-color:#43006A; opacity:0.567"></div>
-                    <div class="legend-color" style="background-color:#6B116F; opacity:0.6"></div>
-                    <div class="legend-color" style="background-color:#981D69; opacity:0.633"></div>
-                    <div class="legend-color" style="background-color:#C92D59; opacity:0.676"></div>
-                    <div class="legend-color" style="background-color:#ED504A; opacity:0.7"></div>
-                    <div class="legend-color" style="background-color:#FA8657; opacity:0.733"></div>
-                    <div class="legend-color" style="background-color:#FBC17D; opacity:0.767"></div>
-                    <div class="legend-color" style="background-color:#FCFFB2; opacity:0.8"></div>
-                    <div class="legend-label ml-1">100%</div>
-                    <div style="clear: left;">
+                  <div id="optional-layers-options" class="p-2 border border-secondary">
+                    <div>Optional layers:</div>
+                    <!-- MAP ADDITIONAL LAYER CHECKBOXES -->
+                    <div id="host_map_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" checked>
+                      <label class="form-check-label" for="host_map_checkbox">
+                        Host map
+                      </label>
+                    </div>
+                    <div id="intermodal_passenger_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="">
+                      <label class="form-check-label" for="intermodal_passenger_checkbox">
+                        Intermodal passenger travel
+                      </label>
+                    </div>
+                    <div id="railroad_lines_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="">
+                      <label class="form-check-label" for="railroad_lines_checkbox">
+                        Railroads
+                      </label>
+                    </div>
+                    <div id="intermodal_freight_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="">
+                      <label class="form-check-label" for="intermodal_freight_checkbox">
+                        Intermodal freight
+                      </label>
+                    </div>
+                    <div id="airports_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="">
+                      <label class="form-check-label" for="airports_checkbox">
+                        Airports
+                      </label>
+                    </div>
+                    <div id="seaports_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="">
+                      <label class="form-check-label" for="seaports_checkbox">
+                        Seaports
+                      </label>
+                    </div>
+                    <div id="truck_parking_checkbox" class="form-check">
+                      <input class="form-check-input" type="checkbox" value="">
+                      <label class="form-check-label" for="truck_parking_checkbox">
+                        Truck parking
+                      </label>
                     </div>
                   </div>
-                </div>
+                </div> <!-- End DISPLAY OPTIONS -->
+
               </div>
-              <div id="year-slider-container" data-toggle="tool" title="Currently displayed year">
-                <div id="display_year_label" class="py-0 ">
-                  <output id="displayYear">{{ historic_data.last.year }}</output>
-                </div>
-                <div id="year-slider" class="range range-info">
-                  <div class="slider-bar">
-                    <div class="slider-bar-colors historic-years" style="width: 55px;"></div>
-                    <div class="slider-bar-colors managed-years" style="width: 2px;"></div>
-                    <div class="slider-bar-colors forecast-years"></div>
-                  </div>
-                  <input class="year-range" type="range" name="range" min="{{ historic_data.0.year }}"
-                    max="{{ historic_data.last.year }}" step="1" value="{{ historic_data.last.year }}"
-                    onchange="displayYear.value=value">
-                </div>
-              </div>
-              </div>
-              <!-- MAP ADDITIONAL LAYER CHECKBOXES -->
-              <div>
-                <div id="additional_map_checkboxes">
-                  {% comment %} <div id="SLF_buffer_zone_checkbox" class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" checked>
-                    <label class="form-check-label" for="defaultCheck1">
-                      SLF buffer zone
-                    </label>
-                  </div> {% endcomment %}
-                  <div id="host_map_checkbox" class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" checked>
-                    <label class="form-check-label" for="host_map_checkbox">
-                      Host Map
-                    </label>
-                  </div>
-                </div>
-              </div>
+
+
+
+
+
+
+
+
+
               <!-- BUDGET PLOT --> 
               <div id="budget_background_layer">
                 <div id="displayed_management_area" class="text-center">
@@ -310,6 +402,10 @@
               <div id="current-budget-plot" class=""></div>
               <!-- DRAW CONTROLS -->
               <div id="draw-controls" class="btn-group-vertical" role="group">
+                <button id="reset-view-tool" class="btn btn-default" type="button" data-toggle="tool"
+                  title="Reset view" data-placement="left">
+                  <i class="fas fa-crosshairs"></i>
+                </button>            
                 <div class="btn-group dropleft" title="Displayed units">
                   <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split "
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -336,7 +432,7 @@
                 </div>
                 <button class="btn btn-secondary btn-sm" type="button" data-toggle="tool" title="Select management type"
                   data-placement="left">
-                  <small>Management type</small>
+                  <small>Management</small>
                 </button>
                 <div class="btn-group dropleft">
                   <button type="button" title="Host removal"
@@ -345,12 +441,21 @@
                   </button>
                   <button type="button" class="btn btn-default" title="Host removal">
                     <i class="fas fa-window-close"></i> <input class="management-type" type="checkbox"
-                      value="host_removal" id="host_removal_status" checked>
+                      value="host_removal" id="host_removal_status" {% if session.default_management_type == 'HOST_REMOVAL' %} checked {% endif %}>
                   </button>
                   <div class="dropdown-menu draw-tool-dropdown">
                     <div class="px-2 py-1">Host removal:</div>
                     <div class="container">
                       <div class="row">
+                        <div class="col-12 px-2 py-1">
+                          <div class="input-group input-group-sm" title="Host removal date">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Date</span>
+                            </div>
+                            <input id="default_host_removal_date" class="form-control management-date" type="date"
+                              name="host_removal_date" value="{{steering_years | first }}-{{ session.default_host_removal_month|stringformat:'02i' }}-{{ session.default_host_removal_day|stringformat:'02i' }}" min="{{steering_years | first }}-01-01" max="{{steering_years | first }}-12-31">
+                          </div>
+                        </div>                      
                         <div class="col-12 px-2 py-1">
                           <div class="input-group input-group-sm" title="Host removal efficacy (range: 0-1)">
                             <div class="input-group-prepend">
@@ -358,15 +463,6 @@
                             </div>
                             <input id="default_host_removal_efficacy" class="form-control" type="number"
                               name="host_removal_efficacy" value="1" min="0" max="1" step="0.1">
-                          </div>
-                        </div>
-                        <div class="col-12 px-2 py-1">
-                          <div class="input-group input-group-sm" title="Host removal date">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text">Date</span>
-                            </div>
-                            <input id="default_host_removal_date" class="form-control management-date" type="date"
-                              name="host_removal_date" value="{{steering_years | first }}-01-01" min="{{steering_years | first }}-01-01" max="{{steering_years | first }}-12-31">
                           </div>
                         </div>
                         <div class="col-12 px-2 py-1">
@@ -386,8 +482,8 @@
                           </div>
                         </div>
                         <input hidden id="default_host_removal_duration" class="form-control management_duration" type="number"
-                          name="pesticide_duration" value="0" min="0" step="1"
-                          title="Pesticide duration">
+                          name="host_removal_duration" value="0" min="0" step="1"
+                          title="Host removal duration">
                       </div>
                     </div>
                   </div>
@@ -398,20 +494,31 @@
                   </button>
                   <button type="button" class="btn btn-default" title="Pesticide">
                     <i class="fas fa-spray-can"></i> <input class="management-type " type="checkbox" value="pesticide"
-                      id="pesticide_status">
+                      id="pesticide_status" {% if session.default_management_type == 'PESTICIDE' %} checked {% endif %}>
                   </button>
                   <div class="dropdown-menu draw-tool-dropdown">
                     <div class="px-2 py-1">Pesticide:</div>
-                    <div class="container">
+                    <div class="container pesticide-info">
                       <div class="row">
                         <div class="col-12 px-2 py-1">
-                          <div class="input-group input-group-sm" title="Pesticide efficacy (range: 0-1)">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text">Efficacy</span>
-                            </div>
-                            <input id="default_pesticide_efficacy" class="form-control" type="number"
-                              name="pesticide_efficacy" value="0.66" min="0" max="1" step="0.01"
-                              title="Pesticide efficacy (range: 0.0 - 1.0)">
+                          <div class="input-group input-group-sm pesticide-type" title="Select a pesticide">
+                            <select id="default_pesticide_type" class="custom-select">
+                        {% for pesticidelink in pesticidelinks %}
+                        <option 
+                        {% if forloop.first %} selected {% endif %}
+                        value="{{ pesticidelink.pesticide.pk }}" 
+                        data-efficacy="{{ pesticidelink.efficacy }}" 
+                        data-application-efficacy="{{ pesticidelink.application_efficacy }}" 
+                        data-application-date="{{steering_years | first }}-{{ pesticidelink.default_application_month|stringformat:'02i' }}-{{ pesticidelink.default_application_day|stringformat:'02i' }}"
+                        data-duration="{{ pesticidelink.pesticide.duration }}" 
+                        data-cost-per-m2="{{ pesticidelink.pesticide.cost_per_meter_squared }}"
+                        data-cost-per-acre="{{ pesticidelink.pesticide.cost_per_acre }}"
+                        >
+                        {{ pesticidelink.pesticide.trade_name }}
+                        </option>
+                        {% endfor %}                              
+                              <option value="other">Other (enter efficacy and duration)</option>
+                            </select>
                           </div>
                         </div>
                         <div class="col-12 px-2 py-1">
@@ -420,42 +527,65 @@
                               <span class="input-group-text">Date</span>
                             </div>
                             <input id="default_pesticide_date" class="form-control management-date" type="date"
-                              name="pesticide_date" value="{{steering_years | first }}-01-01" min="{{steering_years | first }}-01-01" max="{{steering_years | first }}-12-31">
+                              name="pesticide_date" value="{{steering_years | first }}-{{ pesticidelinks.first.default_application_month|stringformat:'02i' }}-{{ pesticidelinks.first.default_application_day|stringformat:'02i' }}" min="{{steering_years | first }}-01-01" max="{{steering_years | first }}-12-31">
                           </div>
-                        </div>                        
+                        </div>                               
+                        <div class="col-12 px-2 py-1">
+                          <div class="input-group input-group-sm" title="Pesticide efficacy (range: 0-1)">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Efficacy</span>
+                            </div>
+                            <input disabled id="default_pesticide_efficacy" class="form-control efficacy" type="number"
+                              name="pesticide_efficacy" value="{{ pesticidelinks.first.efficacy }}" min="0" max="1" step="0.01"
+                              title="Pesticide efficacy (range: 0.0 - 1.0)">
+                          </div>
+                        </div>                            
+                        <div class="col-12 px-2 py-1">
+                          <div class="input-group input-group-sm" title="Pesticide application efficacy (range: 0-1)">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Application Efficacy</span>
+                            </div>
+                            <input id="default_pesticide_application_efficacy" class="form-control application-efficacy" type="number"
+                              name="pesticide_application_efficacy" value="{{ pesticidelinks.first.application_efficacy }}" min="0" max="1" step="0.01"
+                              title="Pesticide application efficacy (range: 0.0 - 1.0)">
+                          </div>
+                        </div>    
+                        <div class="col-12 px-2 py-1">
+                          <div class="input-group input-group-sm" title="Pesticide duration">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Duration</span>
+                            </div>
+                            <input disabled id="default_pesticide_duration" class="form-control management_duration" type="number"
+                              name="pesticide_duration" value="{{ pesticidelinks.first.pesticide.duration }}" min="0" step="1"
+                              title="Pesticide duration">
+                            <div class="input-group-append">
+                              <span class="input-group-text">days</span>
+                            </div>                          
+                          </div>
+                        </div>                                         
                         <div class="col-12 px-2 py-1">
                           <div class="input-group input-group-sm management_group_cost" title="Pesticide cost per selected unit area">
                             <div class="input-group-prepend">
                               <span class="input-group-text">$</span>
                             </div>
                             <input class="displayed_cost form-control" type="number" name="displayed_pesticide_cost"
-                              value="1000" min="0" step="1">
+                              value="{{ pesticidelinks.first.pesticide.cost_per_acre }}" min="0" step="1">
+                              {% comment %} Needs to come from database {% endcomment %}
                             <input hidden id="default_pesticide_cost" class="default_cost" type="number"
-                              name="pesticide_cost_per_m2" value="0.247105" min="0">
+                              name="pesticide_cost_per_m2" value="{{ pesticidelinks.first.pesticide.cost_per_meter_squared }}" min="0"> 
                             <select class="custom-select custom-select-sm cost_unit">
-                              <option value="1">/m^2</option>
                               <option value="0.000247105" selected>/acre</option>
+                              <option value="1">/m^2</option>
                               <option value="0.0001">/ha</option>
                             </select>
                           </div>
-                        </div>
-                        <div class="col-12 px-2 py-1">
-                          <div class="input-group input-group-sm" title="Pesticide duration">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text">Duration</span>
-                            </div>
-                            <input id="default_pesticide_duration" class="form-control management_duration" type="number"
-                              name="pesticide_duration" value="14" min="0" step="1"
-                              title="Pesticide duration">
-                            <div class="input-group-append">
-                              <span class="input-group-text">days</span>
-                            </div>                          
-                          </div>
-                        </div>                        
+                        </div>                    
                       </div>
                     </div>
                   </div>
                 </div>
+
+
                 <button class="btn btn-secondary btn-sm " type="button" data-toggle="tool"
                   title="Below are the tools to draw management" data-placement="left">
                   <small>Draw tools</small>
@@ -501,10 +631,13 @@
                 </button>
               </div>
               <script>
+                              
                 $('#historic-legend-container').show();
                 $('#occurence-legend-container').hide();
                 $('#probability-legend-container').hide();
                 $('#eradication_container').hide();
+                $('#display-options-panel').hide();
+
               </script>
               <!-- STATUS INDICATORS -->
               <div id="status-indicator-shading">
@@ -548,16 +681,27 @@
                     </div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-12 py-1">
-                    <div class="input-group input-group-sm" title="Efficacy (range: 0-1)">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text">Efficacy</span>
-                      </div>
-                      <input id="edit_efficacy" class="form-control" type="number" name="" value="0.5" min="0" max="1"
-                        step="0.1" title="Efficacy (0-1)">
+                <div class="row pesticide-info">
+                  <div id="edit_pesticide_type_group" class="col-12 px-2 py-1">
+                    <div class="input-group input-group-sm pesticide-type" title="Select a pesticide">
+                      <select id="edit_pesticide_type" class="custom-select">
+                        {% for pesticidelink in pesticidelinks %}
+                        <option 
+                        {% if forloop.first %} selected {% endif %}
+                        value="{{ pesticidelink.pesticide.pk }}" 
+                        data-efficacy="{{ pesticidelink.efficacy }}"
+                        data-application-efficacy="{{ pesticidelink.application_efficacy }}" 
+                        data-application-date="{{steering_years | first }}-{{ pesticidelink.default_application_month|stringformat:'02i' }}-{{ pesticidelink.default_application_day|stringformat:'02i' }}"
+                        data-duration="{{ pesticidelink.pesticide.duration }}" 
+                        data-cost-per-m2="{{ pesticidelink.pesticide.cost_per_meter_squared }}"
+                        >
+                        {{ pesticidelink.pesticide.trade_name }}
+                        </option>
+                        {% endfor %} 
+                        <option value="other">Other (enter efficacy and duration)...</option>
+                      </select>
                     </div>
-                  </div>
+                  </div>     
                   <div class="col-12 py-1">
                     <div class="input-group input-group-sm" title="Date">
                       <div class="input-group-prepend">
@@ -565,7 +709,25 @@
                       </div>
                       <input id="edit_date" class="form-control management-date" type="date"  title="Date" value="{{steering_years | first }}-01-01" min="{{steering_years | first }}-01-01" max="{{steering_years | first }}-12-31">
                     </div>
-                  </div>                  
+                  </div>                                 
+                  <div class="col-12 py-1">
+                    <div class="input-group input-group-sm" title="Efficacy (range: 0-1)">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">Efficacy</span>
+                      </div>
+                      <input id="edit_efficacy" class="form-control efficacy" type="number" name="" value="0.5" min="0" max="1"
+                        step="0.1" title="Efficacy (0-1)">
+                    </div>
+                  </div> 
+                  <div id="edit_application_efficacy_group" class="col-12 py-1">
+                    <div class="input-group input-group-sm" title="Application Efficacy (range: 0-1)">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">Application efficacy</span>
+                      </div>
+                      <input id="edit_application_efficacy" class="form-control application-efficacy" type="number" name="" value="0.5" min="0" max="1"
+                        step="0.1" title="Applicaiton efficacy (0-1)">
+                    </div>
+                  </div>                     
                   <div class="col-12 py-1">
                     <div class="input-group input-group-sm management_group_cost" title="Cost per selected unit area">
                       <div class="input-group-prepend">
@@ -587,7 +749,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text">Duration</span>
                       </div>
-                      <input id="edit_duration" class="form-control" type="number" name="" value="0" min="0" 
+                      <input id="edit_duration" class="form-control management_duration" type="number" name="" value="0" min="0" 
                         step="1" title="Duration">
                       <div class="input-group-append">
                         <span class="input-group-text">days</span>
@@ -599,14 +761,60 @@
                   </div>
                 </div>
               </div>
+<script>
+function updatePesticideType(element) {
+  console.log('Updating pesticide info.')
+  new_efficacy = $(element).find(".pesticide-type option:selected").data("efficacy");
+  new_application_efficacy = $(element).find(".pesticide-type option:selected").data("application-efficacy");
+  new_application_date = $(element).find(".pesticide-type option:selected").data("application-date");
+  new_duration = $(element).find(".pesticide-type option:selected").data("duration");
+  new_cost_per_m2 = $(element).find(".pesticide-type option:selected").data("cost-per-m2");
+  new_cost_per_acre = $(element).find(".pesticide-type option:selected").data("cost-per-acre");
+  if ($(element).find(".pesticide-type option:selected").val() != 'other') {
+    $(element).find("input.efficacy").val(new_efficacy).prop('disabled', true);
+    $(element).find("input.application-efficacy").val(new_application_efficacy);
+    $(element).find("input.management-date").val(new_application_date);
+    $(element).find("input.management_duration").val(new_duration).prop('disabled', true);
+    $(element).find("input.default_cost").val(new_cost_per_m2);
+    $(element).find("input.displayed_cost").val(new_cost_per_acre);
+    $(element).find("select.cost_unit").val(0.000247105);
+  }
+  else {
+    $(element).find("input.efficacy").prop('disabled', false);
+    $(element).find("input.management_duration").prop('disabled', false);
+  }
+};
+$(".pesticide-type select").on("change", function() {
+  console.log('Pesticide selection changed');
+  element = $(this).parents(".pesticide-info");
+  updatePesticideType(element);
+});
 
+//DISPLAYED DATA CHANGE
+$("#displayed-data-options input").on("change", function() {
+  console.log('Displayed data type changed');
+  update_displayed_data();
+  //Hide all other types
+
+  //Display the current type and year
+
+});
+
+</script>
               <script>
               $('input[name="editManagementOptions"]').on('change', function() {
                 if ($('input[name="editManagementOptions"]:checked').val() == "Pesticide") {
+                  if ($(this).next(".pesticide-info").find(".pesticide-type option:selected").val() != 'other') {
+                    console.log('Pesticide type is selected')
+                    disableEditingPolygonProperties();                
+                  }
                   $( "#edit_duration_group" ).show("fast");
+                  $( "#edit_pesticide_type_group" ).show("fast");
                 }
                 else {
                   $( "#edit_duration_group" ).hide("fast");
+                  $( "#edit_pesticide_type_group" ).hide("fast");
+                  enableEditingPolygonProperties ();
                 }
               })
               
@@ -615,7 +823,6 @@
               $("#tangible-landscape-listener-button").hide();
               $("#eradication-status-indicator").hide();
               $("a#eradication-status-close-button").on('click', function () {
-                console.log("Close button clicked.");
                 $("#eradication-status-indicator").hide();
               });
               $("button#cancel-polling").hide();
@@ -659,13 +866,13 @@
                                 <div class="input-group-prepend">
                                   <span class="input-group-text">$</span>
                                 </div>
-                                <input type="number" name="budget" value="1500000" min="0" step="0.01"
+                                <input type="number" name="budget" value="350000" min="0" step="0.01"
                                   data-toggle="tooltip" data-placement="top" title="Allowed budget"
                                   data-container="body" class="form-control" id="id_budget">
                               </div>
                             </div>
                             {% include "pops/include/form_field.html" with field=form.random_seed form_class="col-6" %}
-                            <div class="form-check col ml-2">
+                            <div class="form-check col ml-2 invisible">
                               {{ form.tangible_landscape }}
                               <label class="form-check-label" for="tangible_landscape">
                                 Use tangible landscape for management?
@@ -816,8 +1023,8 @@
                 <div id="budget_plot" style="width:100%; height:140px;"></div>
                 <div id="area_infected_side_plot" style="width:100%; height:180px;"></div>
                 <div id="number_infected_side_plot" style="width:100%; height:180px;"></div>
-                <div id="spread_rate_title"><span></span> spread rate (m/year):</div>
-                <div id="spread_plot" style="width:100%; height:220px;"></div>      
+{% comment %}                 <div id="spread_rate_title"><span></span> spread rate (m/year):</div>
+                <div id="spread_plot" style="width:100%; height:220px;"></div>       {% endcomment %}
               </div>    <!-- End run-details -->            
             </div> <!-- End SIDE PANEL -->    
           </div><!-- End row -->
@@ -860,17 +1067,17 @@
 <!-- Function to update mapbox draw color.  -->
 <script src="{% static 'js/dashboard/updateDrawColor.js' %}"></script>
 <script src="{% static 'js/dashboard/draw_functions.js' %}"></script>
+<script src="{% static 'js/websockets/rpc-websockets.js' %}"></script>
 
 {% for run_collection in run_collections %}
 <script>
-  insertRunButton({{ run_collection.pk }},'{{ run_collection.name }}','{{run_collection.date_created}}','{{run_collection.description}}',{{ run_collection.number_infected }},{{ run_collection.infected_area }},{{run_collection.overall_cost}});
+  insertRunButton('{{ run_collection.pk }}','{{ run_collection.name }}','{{run_collection.date_created}}','{{run_collection.description}}',{{ run_collection.number_infected }},{{ run_collection.infected_area }},{{run_collection.overall_cost}});
 </script>
 {% endfor %} 
 
 <script>
 //TIMELINE BUTTONS 
                   $(".timeline-year a").on('click', function () {
-                    console.log("Year clicked.")
                     if (!$(this).parents(".timeline-year-container").hasClass("year_active")) {
                       if ($(this).parents(".timeline-year-container").hasClass("management_complete")) {
                         console.log("Updating displayed results to selected year of management.")
@@ -883,7 +1090,6 @@
                   });
 
                   $(".timeline-visibility").on('click', function () {
-                    console.log("Past treatment visibility toggled.")
                     var year_value = $(this).parents(".timeline-year-container").attr('data-year-value');
                     var treatment_outline = (year_value.toString() + "_management");
                     var treatment_fill = (year_value.toString() + "_fill");
@@ -898,6 +1104,7 @@
                     }
                   });
 
+                  //THIS ONLY WORKS FOR THE ACTIVE USER RIGHT NOW
                   $(".timeline-edit").on('click', function () {
                     console.log("Attempting to delete runs...")
                     $(this).parents(".timeline-year-container").removeClass("management_complete").removeClass("year_active").addClass("management_active").removeClass("management_hidden").addClass("management_visible");
@@ -959,6 +1166,16 @@
   });
 
 //MAP
+
+  function setDateRange(year) {
+    var min_date = year.toString() + '-01-01';
+    var max_date = year.toString() + '-12-31';
+    var display_date = year.toString() + "-{{ session.default_host_removal_month|stringformat:'02i' }}-{{ session.default_host_removal_day|stringformat:'02i' }}"
+    $('.management-date').attr('min',min_date);
+    $('.management-date').attr('max',max_date);
+    $('.management-date').val(display_date);
+  }
+
   mapboxgl.accessToken =
       'pk.eyJ1Ijoic2hhbmtqNjg3IiwiYSI6ImNqc2pmc201eDE0amUzeXF6eTYzaDI2azUifQ.7uhVr9px-kAjXkqSdTW2OQ';
     /* eslint-disable */
@@ -975,15 +1192,65 @@ var max_occurence_number_for_legend = {{ session.max_value }}; //Normalize the r
 var map_fill_opacity = 0.6; //For occurence and forecasted data
 
 map.on('load', function() {
+  map.setLayoutProperty('airports-circles','visibility','none');
+  map.setLayoutProperty('seaport-circles','visibility','none');
+  map.setLayoutProperty('intermodal-passenger','visibility','none');
+  map.setLayoutProperty('intermodal-freight','visibility','none');
+  map.setLayoutProperty('railroad-lines','visibility','none');
+  map.setLayoutProperty('truck-parking','visibility','none');
   hostmapLayer({{ host_map|safe }});
   console.log("Adding initial data.");
   {% for year in historic_data %}
-    newFireLayer({{ year.data|safe }}, '{{ year.year}}', max_occurence_number_for_legend);
+    newFireLayer({{ year.data|safe }}, '{{ year.year}}', max_occurence_number_for_legend,'outputs');
   {% endfor %}
   map.setLayoutProperty({{ historic_data.last.year }}, 'visibility', 'visible');
   default_run = {{ session.default_run }};
   get_output(default_run);                      
 });
+
+var popup = new mapboxgl.Popup({
+  closeButton: false,
+  closeOnClick: false
+});
+ 
+map.on('mouseenter', 'airports-circles', function (e) {
+  // Change the cursor style as a UI indicator.
+  map.getCanvas().style.cursor = 'pointer';
+  
+  var coordinates = e.features[0].geometry.coordinates.slice();
+  
+  // Ensure that if the map is zoomed out such that multiple
+  // copies of the feature are visible, the popup appears
+  // over the copy being pointed to.
+  while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+  coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  }
+  
+  // Populate the popup and set its coordinates
+  // based on the feature found.
+  popup.setLngLat(coordinates).setHTML('<div>'+e.features[0].properties.FAA_ID+' Airport</div>' +
+      '<p> Arrivals: ' + e.features[0].properties.ARRIVALS + '</p>' +
+      '<p> Departures: ' + e.features[0].properties.DEPARTURES + '</p>'
+      ).addTo(map);
+});
+ 
+map.on('mouseleave', 'airports-circles', function () {
+  map.getCanvas().style.cursor = '';
+  popup.remove();
+});
+
+//Some events that might be useful to use in the future:
+//map.on('move', function() {
+//  console.log('Map is being moved')
+//})
+
+//map.on('moveend', function() {
+//  console.log('MOVEEND')
+//})
+
+//map.on('movestart', function() {
+//  console.log('MOVESTART')
+//})
 
 //Set initial draw color and settings, add Draw functionality to the map.
 var draw_color = colors[0];
@@ -997,7 +1264,7 @@ map.addControl(draw);
 //All events are all triggered by user interaction.
 //Here we are giving the draw events custom functions to perform when triggered.
 map.on('draw.create', createPolygon);
-map.on('draw.delete', updateJSON);
+map.on('draw.delete', deletePolygons);
 map.on('draw.update', updatePolygons);
 map.on('draw.selectionchange', displaySelectionChange);
 //Mapbox draw automatically switches to select tool after drawing a polygon.
@@ -1009,10 +1276,20 @@ map.on('draw.modechange', e => {
   }
 });
 
-    //editPolygons popup button click
-    $("#changeManagementButton").on('click', function () {
-      changePolygonProperties();
-    });
+//Reset view to case study zoom and center
+$("#reset-view-tool").on('click', function () {
+  map.flyTo({
+    center: [{{ mapbox_parameters.longitude}}, {{ mapbox_parameters.latitude}}], // initial map center in [lon, lat]
+    zoom: {{ mapbox_parameters.zoom }}, // starting zoom
+    pitch: 0,
+    bearing: 0
+  });
+});
+
+//editPolygons popup button click
+$("#changeManagementButton").on('click', function () {
+  changePolygonProperties();
+});
 
 
 //The following two sections should be heavily modified with the changes to the
@@ -1044,7 +1321,6 @@ $(".management-type").on('change',  function () {
   //If all management types are unchecked, recheck the last unchecked checkbox
   if ($('.management-type:not(:checked)').length == $('.management-type').length ){
     $(this).prop('checked',true)
-    console.log('A management type must be selected.')
 	}
 });
 
@@ -1061,6 +1337,14 @@ $('#show_details_button, #hide_details_button').on('click', function () {
   $('#show_details_button').toggle("fast");
 });
 
+//DISPLAY OPTIONS PANEL
+$('#show_display_options_button').on('click', function () {
+  console.log('Display options panel clicked')
+  //$('#side-panel').toggleClass('d-md-block d-md-none');
+  $('#show_display_options_button i#display_options_button_icon').toggleClass("fa-chevron-down fa-chevron-up");
+  $('#display-options-panel').toggle();
+});
+
 //I don't think this is used anymore... check
   $('#map-tab').on('shown.bs.tab', function () {
     console.log("Map tab selected.")
@@ -1071,18 +1355,34 @@ $('#show_details_button, #hide_details_button').on('click', function () {
   $('#chart-view-tab').on('shown.bs.tab', function () {
     });
 
-
-$("#year-slider").change(function () {
-  year_id = $(this).find('input').val();
-  //$("#year-value").text(year_id);
-  var steering_year = parseInt($(".timeline-year-container.year_active").attr('data-year-value'));
+function update_displayed_data() {
+  var year_id = $('#year-slider').find('input').val();
   var min_year = $("#year-slider input").attr('min');
   var max_year = $("#year-slider input").attr('max');
-  console.log("Hiding management for years: " + min_year + " - " + max_year);
   for (i = parseInt(min_year); i <= parseInt(max_year); i++) {
-    if (map.getLayer(i.toString())) {
-      map.setLayoutProperty(i.toString(), 'visibility', 'none');
-    };
+    if (i <= {{ historic_data.last.year }}) {
+      //Hide historic data years
+      var hide_layer_name = i;
+      if (map.getLayer(hide_layer_name)) {
+        map.setLayoutProperty((hide_layer_name), 'visibility', 'none');
+      }
+      else {
+        console.log(hide_layer_name + " does not exist")
+      }      
+    }
+    else {
+      //Hide data years
+      var x;
+      for (x in displayed_data_types) {
+        var hide_layer_name = i + displayed_data_types[x];
+        if (map.getLayer(hide_layer_name)) {
+          map.setLayoutProperty((hide_layer_name), 'visibility', 'none');
+        }
+        else {
+          console.log(hide_layer_name + " does not exist")
+        }
+      }
+    }
     var treatment_fill = (i.toString() + "_fill");
     if (map.getLayer(treatment_fill)) {
       if (year_id >= i) {
@@ -1091,33 +1391,52 @@ $("#year-slider").change(function () {
       else {
         map.setLayoutProperty(treatment_fill, 'visibility','none');
       }
-    };
-  };
-  map.setLayoutProperty(year_id, 'visibility', 'visible');
-  $("#displayYear").val(year_id);
-  if (year_id > steering_year){
-    $('#display_year_forecast').text('Forecast');
-    $('#legend_description').text(' (Probability of occurence)');
-    $('#historic-legend-container').hide();
-    $('#occurence-legend-container').hide();
-    $('#probability-legend-container').show();
+    };    
   }
-  else if (year_id > {{ historic_data.last.year }}){
-    $('#display_year_forecast').text('Current state');
-    $('#legend_description').text(' (Predicted occurences)');
-    $('#historic-legend-container').hide();
-    $('#occurence-legend-container').show();
-    $('#probability-legend-container').hide();  
-  }
-  else {
+  if (year_id <= {{ historic_data.last.year }}) {
+    //Show the historic data for the year
+    var layer_name = year_id;
     $('#display_year_forecast').text('Field observations');
     $('#legend_description').text(' (Number of detections)');
     $('#historic-legend-container').show();
     $('#occurence-legend-container').hide();
     $('#probability-legend-container').hide();
   }
-  console.log("Current displayed year: " + year_id);
-  spreadRatePlot({{historic_data.last.year}});
+  else {
+    //Show the selected forecast data
+    var displayed_map_type = $('input[name="displayed_data_type"]:checked').val();
+    var displayed_map_name = $('input[name="displayed_data_type"]:checked').data('name');
+    var layer_name = year_id + displayed_map_type;
+    if (displayed_map_type == "_forecast") {
+      $('#display_year_forecast').text('Forecast');
+      $('#legend_description').text(' (Probability of occurence)');
+      $('#historic-legend-container').hide();
+      $('#occurence-legend-container').hide();
+      $('#probability-legend-container').show();    
+    }
+    else {
+      $('#display_year_forecast').text(displayed_map_name);
+      $('#legend_description').text(' (number)');
+      $('#historic-legend-container').hide();
+      $('#occurence-legend-container').show();
+      $('#probability-legend-container').hide();        
+    }
+  }
+  console.log('Displaying layer: ' + layer_name);
+  if (map.getLayer(layer_name)) {
+    map.setLayoutProperty(layer_name, 'visibility', 'visible');
+  }
+  else {
+    alert('The layer ' + layer_name + ' does not exist.')
+  }
+  $("#displayYear").val(year_id);
+}
+
+$("#year-slider").change(function () {
+  //year_id = $(this).find('input').val();
+  update_displayed_data();
+
+  //var steering_year = parseInt($(".timeline-year-container.year_active").attr('data-year-value'));
 });
 
 var most_recent_run = 0;
@@ -1145,6 +1464,7 @@ function get_run_collection(run_collection_id) {
       $('#input_random_seed span').text(data.random_seed);
       $('#input_date_created span').text(data.date_created);
       $('#input_budget span').text(data.budget);
+      $('input#id_budget').val(data.budget);
       $('#input_tangible_landscape span').text(data.tangible_landscape);
       $('#id_run_collection').val(data.pk);    
       $(".timeline-year-container").removeClass("year_active").addClass("management_not_started").removeClass("management_active").removeClass("management_complete");
@@ -1177,16 +1497,6 @@ function get_run_collection(run_collection_id) {
           }
         };
       }
-
-    function setDateRange(year) {
-      var min_date = year.toString() + '-01-01';
-      var max_date = year.toString() + '-12-31';
-      var display_date = year.toString() + '-01-01';
-      $('.management-date').attr('min',min_date);
-      $('.management-date').attr('max',max_date);
-      $('.management-date').val(min_date);
-    }
-
     if (data.tangible_landscape) {
       console.log('Tangible landscape is on.')
       //hide run buttons
@@ -1198,13 +1508,14 @@ function get_run_collection(run_collection_id) {
       //if new run, get output for new run
     }
     else {
-      console.log('Tangible landscape is false.')
+      //console.log('Tangible landscape is false.')
       $(".timeline-year-container").find(".submit_run_button").show();
       $("#tangible-landscape-listener-button").hide();
       var year_count = parseInt($(".timeline-year-container.management_active").attr('data-year-counter'));
-      console.log('Updating draw color to ' + year_count);
+      //console.log('Updating draw color to ' + year_count);
       updateDrawColor(year_count);
     }
+    updateActiveUser(run_collection_id);
     },
     error: function (xhr) {
       console.log('Failed getting run collection.')
@@ -1217,25 +1528,36 @@ var spread_rate;
 var max_spread_rate=0;
 
 function get_output(run_id) {
+  //Remove any drawn management on the dashboard before loading new data
+  draw.deleteAll();
+  $('#id_management_polygons').val(0);
+  updateDrawMetrics();
   console.log('GETTING OUTPUT FOR RUN: ' + run_id);
   $('#status-text span').text('Loading...');
   $("#status-indicator").show();
   $("#status-indicator-shading").show();
-  $("#year-slider").find('input').val('{{ historic_data.last.year }}'); 
+  $("#year-slider").find('input').val('{{ historic_data.last.year }}');
   $("#year-slider input").attr('max', '{{ historic_data.last.year }}');
   $("#displayYear").val('{{ historic_data.last.year }}');
   map.setLayoutProperty('{{ historic_data.last.year }}', 'visibility', 'visible');
   //Make this loop a function of current slider max
-  for (i = {{steering_years | first }}; i < ({{ steering_years | last }} + 1); i++) { 
-    if (map.getLayer(i.toString())) {
-      map.removeLayer(i.toString());
-    };
-    if (map.getSource(i.toString())) {
-      map.removeSource(i.toString());
-    };
+  for (i = {{ steering_years | first }}; i < ({{ steering_years | last }} + 1); i++) {
+    //console.log('Removing layers and sources for year: ', i);
+    var x;
+    for (x in displayed_data_types) {
+      var layer_name = i + displayed_data_types[x];
+      if (map.getLayer(layer_name)) {
+        map.removeLayer(layer_name);
+        //console.log('Removing layer: ' + layer_name)
+      }
+      if (map.getSource(layer_name)) {
+        map.removeSource(layer_name);
+      };
+    }
+
     var treatment_outline = (i.toString() + "_management");
     var treatment_fill = (i.toString() + "_fill");
-    console.log('Removing existing drawn management.');
+    //console.log('Removing existing drawn management.');
     if (map.getLayer(treatment_fill)) {
       map.removeLayer(treatment_fill);
     };
@@ -1263,32 +1585,56 @@ function get_output(run_id) {
       var button_number_infected = 0;
       var steering_year = data.run_inputs.steering_year;
       spread_rate = data.spread_rate;
-      max_spread_rate=data.max_spread_rate;
+      max_spread_rate = data.max_spread_rate;
       for (var i = 0; i < data.results.length; i++) {
         var year = data.results[i].year;
-        console.log("Adding output " + data.results[i].pk + ' for year ' + year);
+        //console.log("Adding output " + data.results[i].pk + ' for year ' + year);
+
         var year_string = year.toString();
-        if (year > steering_year) {
-          var map_data = data.results[i].probability_map;
-          newMagmaLayer(map_data, year_string,100);
+        if (data.results[i].median_spread_map) {
+          var probability_map_data = data.results[i].median_spread_map;
+          var probability_layer_name = year_string + "_forecast";
+          newMagmaLayer(probability_map_data, probability_layer_name, 100,'probability');
+        } 
+        if (data.results[i].median_spread_map) {
+          var median_map_data = data.results[i].median_spread_map;
+          var median_layer_name = year_string + "_median";
+          newFireLayer(median_map_data, median_layer_name, max_occurence_number_for_legend,'median');
         }
-        else {
-          var map_data = data.results[i].single_spread_map;
-          newFireLayer(map_data, year_string,max_occurence_number_for_legend);
+        if (data.results[i].median_spread_map) {
+          var maximum_map_data = data.results[i].median_spread_map;
+          var maximum_layer_name = year_string + "_maximum";
+          newFireLayer(maximum_map_data, maximum_layer_name, max_occurence_number_for_legend,'max');
         }
+        if (data.results[i].median_spread_map) {
+          var minimum_map_data = data.results[i].median_spread_map;
+          var minimum_layer_name = year_string + "_minimum";
+          newFireLayer(minimum_map_data, minimum_layer_name, max_occurence_number_for_legend,'min');
+        }
+        if (data.results[i].median_spread_map) {
+          var mean_map_data = data.results[i].median_spread_map;
+          var mean_layer_name = year_string + "_mean";
+          newFireLayer(mean_map_data, mean_layer_name, max_occurence_number_for_legend,'mean');
+        }
+        if (data.results[i].median_spread_map) {
+          var stdev_map_data = data.results[i].median_spread_map;
+          var stdev_layer_name = year_string + "_stdev";
+          newFireLayer(stdev_map_data, stdev_layer_name, max_occurence_number_for_legend,'standard_deviation');
+        }
+
         year_list.push(data.results[i].year);
-        infected_area_list.push(data.results[i].infected_area );
+        infected_area_list.push(data.results[i].infected_area);
         infected_number_list.push(data.results[i].number_infected);
         //Add new run button if there is steering or update existing button
         if (data.steering) {
-          if((i + 1) == (data.results.length)){
+          if ((i + 1) == (data.results.length)) {
             var run_collection_pk = $('#run-collection-name').attr('data-run-collection-pk');
             var run_collection_name = $('#input_run_name span').text();
             var run_collection_description = $('#input_description span').text();
             var run_collection_date = $('#input_date_created span').text(data.date_created);
             var run_collection_budget = $('#input_budget span').text(data.budget);
-            insertRunButton(run_collection_pk, run_collection_name, run_collection_date, run_collection_description, data.results[i].number_infected, data.results[i].infected_area, data.total_management_cost);
-            relayout_buttons(max_number,max_area,max_cost);
+            insertRunButton(run_collection_pk.toString(), run_collection_name, run_collection_date, run_collection_description, data.results[i].number_infected, data.results[i].infected_area, data.total_management_cost);
+            relayout_buttons(max_number, max_area, max_cost);
           }
         }
         if (year > max_year) {
@@ -1305,63 +1651,60 @@ function get_output(run_id) {
         infected_number_list = [];
       if (data.steering) {
         var display_year = data.run_inputs.steering_year;
-        map.setLayoutProperty('{{ historic_data.last.year }}', 'visibility', 'none');
-        map.setLayoutProperty(display_year.toString(), 'visibility', 'visible');
+        setDateRange(display_year + 1);
         $("#year-slider").find('input').val(display_year.toString());
         $("#displayYear").val(display_year.toString());
-        $('#display_year_forecast').text('Current state');
-        $('#legend_description').text(' (Number of detections)');
-        $('#historic-legend-container').hide();
-        $('#occurence-legend-container').show();
-        $('#probability-legend-container').hide();        
+        update_displayed_data();
       };
       var defaults = data.no_management_default;
       var steering_outputs = data.all_steering_years;
-      var initial_infected_area = {{historic_data.last.infected_area}};
-      var initial_number_infected = {{historic_data.last.number_infected}};
+      var initial_infected_area = {{ historic_data.last.infected_area }};
+      var initial_number_infected = {{ historic_data.last.number_infected }};
       var first_year = {{ steering_years | first }};
+      //console.log('First year = ', first_year);
       var last_year = {{ steering_years | last }};
+      //console.log('Last year = ', last_year);
       budget_plot(defaults, steering_outputs, first_year, last_year);
       area_plot(defaults, steering_outputs, initial_infected_area, initial_number_infected, first_year, last_year);
-      spreadRatePlot({{historic_data.last.year}});
+      //spreadRatePlot({{historic_data.last.year}});
       //I think this loop is unnecessary
       //for (var i = 0; i < data.all_steering_years.length; i++) {
-        //console.log('Sanity check: ' + i)
+      //console.log('Sanity check: ' + i)
       //};
       $("#status-indicator").hide();
       $("#status-indicator-shading").hide();
       for (var i = 0; i < data.inputs.length; i++) {
         if (data.steering) {
           if (data.run_inputs.steering_year >= data.inputs[i].steering_year) {
-          var treatment_outline = (data.inputs[i].steering_year.toString() + "_management");
-          var treatment_fill = (data.inputs[i].steering_year.toString() + "_fill");
-          if (map.getLayer(treatment_fill)) {
-            map.removeLayer(treatment_fill);
-          };
-          if (map.getSource(treatment_outline)) {
-            map.removeSource(treatment_outline);
-          };
-          map.addSource(treatment_outline, {
-            'type': 'geojson',
-            /*many types of data can be added, such as geojson, vector tiles or raster data*/
-            'data': data.inputs[i].management_polygons,
-          });
-          /*here we are adding a source, then a layer based on that that source*/
+            var treatment_outline = (data.inputs[i].steering_year.toString() + "_management");
+            var treatment_fill = (data.inputs[i].steering_year.toString() + "_fill");
+            if (map.getLayer(treatment_fill)) {
+              map.removeLayer(treatment_fill);
+            };
+            if (map.getSource(treatment_outline)) {
+              map.removeSource(treatment_outline);
+            };
+            map.addSource(treatment_outline, {
+              'type': 'geojson',
+              /*many types of data can be added, such as geojson, vector tiles or raster data*/
+              'data': data.inputs[i].management_polygons,
+            });
+            /*here we are adding a source, then a layer based on that that source*/
 
-          map.addLayer({
-            "id": treatment_fill,
-            "type": 'fill',
-            "source": treatment_outline,
-            "paint": {
-              'fill-pattern': [
-                "case",
-                ['==', ['get', "management_type"], "Host removal"], host_removal_patterns[i],
-                ['==', ['get', "management_type"], "Pesticide"], previous_pesticide_application_patterns[i],
-                ''
-              ],      
-              "fill-opacity": 1.0
-            }
-          });
+            map.addLayer({
+              "id": treatment_fill,
+              "type": 'fill',
+              "source": treatment_outline,
+              "paint": {
+                'fill-pattern': [
+                  "case",
+                  ['==', ['get', "management_type"], "Host removal"], host_removal_patterns[i],
+                  ['==', ['get', "management_type"], "Pesticide"], previous_pesticide_application_patterns[i],
+                  ''
+                ],
+                "fill-opacity": 1.0
+              }
+            });
           };
         };
       };
@@ -1372,58 +1715,7 @@ function get_output(run_id) {
   });
 };
 
-function poll(new_run_id) {
-  setTimeout(function () {
-    var stop_listening = $('button#cancel-polling').attr('data-value');
-    $.ajax({
-      url: "{% url 'check_status' %}",
-      dataType: "json",
-      data: {
-        'new_run_id': new_run_id
-      },
-      success: function (data) {
-        console.log("Status for run " + new_run_id + ": " + data.status);
-        //Setup the next poll recursively
-        if (data.status == "SUCCESS") {
-          $('#status-text span').text('Success! Loading results...');
-          get_output(new_run_id);
-            var year_count = parseInt($(".timeline-year-container.management_active").attr('data-year-counter'));
-          $('#id_management_polygons').val(0);
-            $(".timeline-year-container").removeClass("year_active");
-            $(".timeline-year-container.management_active").removeClass("management_active").addClass("management_complete").addClass("year_active").next().next(".timeline-year-container").removeClass("management_not_started").addClass("management_active");
-            console.log('Year count is:' + year_count);
-            var next_year_count = parseInt(year_count) + 1;
-            console.log('Next year: ' + next_year_count);
-            updateDrawColor(next_year_count);
-        } else if (stop_listening == 'true') {
-          console.log("Exiting polling loop. This won't stop the PoPS run from continuing, but will prevent it from displaying on the dashboard.")
-          $("#status-indicator").hide();
-          $("#status-indicator-shading").hide();
-          $("button#cancel-polling").attr('data-value', 'false');
-        } else if (data.status == "FAILED") {
-          $('#status-text span').text('RUN FAILED.');
-          $("#status-logo").hide();
 
-        } else if (data.status == "PENDING") {
-          if ($('input#id_tangible_landscape').prop('checked')) {
-            $('#status-text span').text('Waiting for Tangible Landscape management...');
-          } else {
-            $('#status-text span').text('Pending...');
-          }
-          poll(new_run_id);
-        } else {
-          $('#status-text span').text(data.status);
-          poll(new_run_id);
-        }
-      },
-      error : function(xhr,errmsg,err) {
-      alert("An error has occured: " + xhr.status + "\nError: " + xhr.responseText 
-      + "\nThere was a problem listening for the results of the model run... the simulation is most likely still running. Try refreshing the page in 1-2 minutes.");
-          console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-      }
-    });
-  }, 2000);
-};
 
 $("#tangible-landscape-listener-button a").on('click', function () {
   if ($(this).attr('data-value') == 'true') {
@@ -1489,18 +1781,6 @@ $("input#id_tangible_landscape").on('change', function () {
     enableDrawTools();
   }
 });
-/*
-$("#SLF_buffer_zone_checkbox input").on('change', function () {
-  if ($('#SLF_buffer_zone_checkbox input').prop('checked')){
-    console.log('Show SLF buffer zone');
-    map.setLayoutProperty('perimeter_zone_layer','visibility','visible');
-  }
-  else {
-    console.log('Hide SLF buffer zone');
-    map.setLayoutProperty('perimeter_zone_layer','visibility','none');
-  }
-}); 
-*/
 
 $("#host_map_checkbox input").on('change', function () {
   if ($('#host_map_checkbox input').prop('checked')){
@@ -1512,11 +1792,77 @@ $("#host_map_checkbox input").on('change', function () {
     map.setLayoutProperty('host_map','visibility','none');
   }
 });
-    
+
+$("#airports_checkbox input").on('change', function () {
+  if ($('#airports_checkbox input').prop('checked')){
+    console.log('Show airports');
+    map.setLayoutProperty('airports-circles','visibility','visible');
+  }
+  else {
+    console.log('Hide airports');
+    map.setLayoutProperty('airports-circles','visibility','none');
+  }
+});
+
+$("#seaports_checkbox input").on('change', function () {
+  if ($('#seaports_checkbox input').prop('checked')){
+    console.log('Show seaports');
+    map.setLayoutProperty('seaport-circles','visibility','visible');
+  }
+  else {
+    console.log('Hide seaports');
+    map.setLayoutProperty('seaport-circles','visibility','none');
+  }
+});
+
+$("#intermodal_passenger_checkbox input").on('change', function () {
+  if ($('#intermodal_passenger_checkbox input').prop('checked')){
+    console.log('Show passenger');
+    map.setLayoutProperty('intermodal-passenger','visibility','visible');
+  }
+  else {
+    console.log('Hide passenger');
+    map.setLayoutProperty('intermodal-passenger','visibility','none');
+  }
+});
+
+$("#intermodal_freight_checkbox input").on('change', function () {
+  if ($('#intermodal_freight_checkbox input').prop('checked')){
+    console.log('Show freight');
+    map.setLayoutProperty('intermodal-freight','visibility','visible');
+  }
+  else {
+    console.log('Hide freight');
+    map.setLayoutProperty('intermodal-freight','visibility','none');
+  }
+});
+
+$("#railroad_lines_checkbox input").on('change', function () {
+  if ($('#railroad_lines_checkbox input').prop('checked')){
+    console.log('Show railroads');
+    map.setLayoutProperty('railroad-lines','visibility','visible');
+  }
+  else {
+    console.log('Hide railroads');
+    map.setLayoutProperty('railroad-lines','visibility','none');
+  }
+});
+
+$("#truck_parking_checkbox input").on('change', function () {
+  if ($('#truck_parking_checkbox input').prop('checked')){
+    console.log('Show seaports');
+    map.setLayoutProperty('truck-parking','visibility','visible');
+  }
+  else {
+    console.log('Hide seaports');
+    map.setLayoutProperty('truck-parking','visibility','none');
+  }
+});
+
     $(".delete_run_collection").on('click', function () {
    //var run_collection_pk = $('#run-collection-name').attr('data-run-collection-pk');
       event.stopPropagation(); 
-      var run_collection_pk = $(this).parent('.run-link').attr('data-run-collection');
+      var run_collection_pk = $(this).parents('.run-link').attr('data-run-collection');
       console.log("Deleting run_collection " + run_collection_pk);
         $.ajax({
           url: "{% url 'delete_run_collection' %}",
@@ -1621,6 +1967,10 @@ $("#host_map_checkbox input").on('change', function () {
 
 $("#submit-run").on('submit', function () {
   event.preventDefault();
+  if ($('input#id_run_collection').val() == "0") {
+    alert('You must create a run collection before submitting a run. Use the "+" icon in the right side panel.')
+    return;
+  }
   var steering_year = parseInt($(".timeline-year-container.management_active").attr('data-year-value'));
   var year_count = parseInt($(".timeline-year-container.management_active").attr('data-year-counter'));
   console.log('SUBMITTING NEW RUN WITH MANAGEMENT IN ' + steering_year);
@@ -1638,16 +1988,21 @@ $("#submit-run").on('submit', function () {
           var case_study_id = {{ case_study.pk }};
           var session_id = {{ session.pk }};
           if (!$('input#id_tangible_landscape').prop('checked')) {
-            console.log('ATTEMPTING TO RUN POPS MODEL API FOR RUN ' + new_run_id + ' IN RUN COLLECTION ' + new_run_collection_id);
-            var base_url = "https://pops-model-api.appspot.com/status?"
-            //"https://pops-model-api.appspot.com/status?case_study_id=2&run_id="; //"https://pops-model-api.appspot.com/status?case_study_id=2&run_id=";//https://test-dot-pops-model-api.appspot.com/status?case_study_id=2&run_id=";
-            var run_url = (base_url + "run_id=" + new_run_id.toString() + "&run_collection_id=" + new_run_collection_id.toString() + "&session_id=" + session_id.toString() + "&case_study_id=" + case_study_id.toString()); //base_url.concat(new_run_id.toString());
-            console.log('Using URL: ' + run_url);
-            $.ajax({
+             console.log('ATTEMPTING TO RUN POPS MODEL API FOR RUN ' + new_run_id + ' IN RUN COLLECTION ' + new_run_collection_id);
+             var base_url = "https://pops-model-api.ngrok.io"
+             // https://d421f4b2cc79.ngrok.io/status?case_study_id=2&session_id=2&run_collection_id=25&run_id=40
+             //"https://pops-model-api.appspot.com/status?case_study_id=2&run_id="; //"https://pops-model-api.appspot.com/status?case_study_id=2&run_id=";//https://test-dot-pops-model-api.appspot.com/status?case_study_id=2&run_id=";
+             var run_url = (base_url + "/status?case_study_id=" + case_study_id.toString() + "&session_id=" + session_id.toString() + "&run_collection_id=" + new_run_collection_id.toString() + "&run_id=" + new_run_id.toString()) ;
+             console.log('Using URL: ' + run_url);
+             //chatSocket.notify("run_pops", {
+              //run_id: new_run_id,
+              //run_collection: new_run_collection_id,
+            //})
+             $.ajax({
               url: run_url,
               dataType: 'JSONP',
               type: 'GET',
-              headers: { 'Access-Control-Allow-Origin': 'https://pops-model-api.appspot.com' },
+              headers: { 'Access-Control-Allow-Origin': base_url },
               statusCode: {
                 404: function() {
                   alert( "PoPS Model API not found (404 error)... \n Please try again. \n If the problem persists, contact an admin." );
@@ -1662,14 +2017,13 @@ $("#submit-run").on('submit', function () {
               error : function(xhr,errmsg,err) {
                 console.log('Received status from the PoPS model API:' + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
               }
-            });
-            console.log('Sent run request to PoPS. Waiting for updates to database...')
+             });
+             console.log('Sent run request to PoPS. Waiting for updates to database...')
           }
           else {
             console.log('Waiting for management from tangible landscape...')
           }
           $("#submit-run-button").attr('data-run',new_run_id); //I think this is obsolete
-          poll(new_run_id); 
         },
                 // handle a non-successful response
         error : function(xhr,errmsg,err) {
@@ -1692,15 +2046,214 @@ function relayout_buttons(max_number,max_area,max_cost) {
   $('.comparison_plot').each(function () {
     idArray.push(this.id);
   });
-  console.log('Updating y-axis values of buttons.')
+  //console.log('Updating y-axis values of buttons.')
 
   for (i = 0; i < idArray.length; i++) {
     Plotly.relayout(idArray[i], update);
   }
 };
 
+// *WEBSOCKETS*
+//Initiate websocket
+const session = {{ session.pk }};
+var ws_scheme = window.location.protocol == "https:" ? "wss://" : "ws://";
+var chatSocket = new RPCWebSocket.Client(
+  ws_scheme +
+  window.location.host +
+  '/ws/dashboard/' +
+  session +
+  '/', {
+    max_reconnects: 0, // Unlimited
+  });
+
+//Receive updated management from server
+chatSocket.on("update_management", (event) => {
+  console.log("New management polygons received for run collection " + event.run_collection)
+  //console.log(event);
+  document.querySelector('#id_management_polygons').value = (event.management_polygons);
+  //console.log($('#id_run_collection').val());
+  //console.log(event.run_collection)
+  //if current run collection is the even run collection, update management
+  if ($('#id_run_collection').val() == event.run_collection){
+    var treatment = JSON.parse(event.management_polygons);
+    //console.log('Treatment:')
+    //console.log(treatment)
+    if (treatment != 0) {
+      var ids = draw.set(treatment);
+    } else {
+      draw.deleteAll();
+    }
+    updateDrawMetrics();
+    if ($("#polygon-tool").hasClass("active")) {
+      draw.changeMode('draw_polygon');
+    }          
+  }
+});
+
+//New run collection
+chatSocket.on("new_run_collection", (event) => {
+  console.log("---NEW RUN COLLECTION---")
+  console.log(event);
+  run_collection_id = event.run_collection;
+  name = event.name;
+  date = event.date;
+  description = event.description;
+  insertRunButton(run_collection_id, name, date, description, 0, 0, 0)
+});
+
+//This will be obsolete when run_status_update is complete
+//chatSocket.on("run_pops", (event) => {
+ // console.log('Someone clicked the Run PoPS button')
+  //console.log(event);
+  //run_collection = event.run_collection;
+  //new_run_id = event.run_id;
+  //if ($('#id_run_collection').val() == run_collection){
+ // }
+//})
+
+//Send management to new user in Run Collection
+chatSocket.on("send_management_request", (event) => {
+  console.log("Requesting management for run collection " + event.run_collection)
+  //console.log(event);
+  if ($('#id_run_collection').val() == event.run_collection & $('#id_management_polygons').val() != 0){
+    sendJSONWebsocket();
+  }
+});
+
+//Send management to newly connected user
+chatSocket.on("new_connection_detected", (event) => {
+  console.log("New user added")
+  console.log(event);
+});
+
+//Send management to newly connected user
+chatSocket.on("connection_removed", (event) => {
+  console.log("User exited")
+  console.log(event);
+});
+
+//Run status updated
+chatSocket.on("run_status_update", (event) => {
+  console.log("Run status updated")
+  console.log(event);
+  if ($('#id_run_collection').val() == event.run_collection) {
+    console.log('--RUN STATUS CHANGED to ' + event.status + '--')
+    $("#status-indicator").show();
+    $("#status-indicator-shading").show();
+    $('#status-text span').text(event.status);
+    if (event.status == "SUCCESS") {
+      $('#id_management_polygons').val(0);
+      get_output(event.run_pk);
+      steering_year = event.year;
+      var year_count = parseInt($("div.timeline-year-container[data-year-value='" + event.year + "']").attr('data-year-counter'));
+      var new_management_year= year_count+1;
+      $(".timeline-year-container").removeClass("year_active").removeClass("management_active").removeClass("management_complete");
+      for (var year = 0; year < year_count+1; year++) { 
+        $("div.timeline-year-container[data-year-counter='" + year + "']").addClass("management_complete");
+      }
+      $("div.timeline-year-container[data-year-counter='" + year_count + "']").addClass("year_active");
+      $("div.timeline-year-container[data-year-counter='" + new_management_year + "']").removeClass("management_not_started").addClass("management_active");
+      //$(".timeline-year-container.management_active").removeClass("management_active").addClass("management_complete").addClass("year_active").next().next(".timeline-year-container").removeClass("management_not_started").addClass("management_active");
+      //Remove year_active, management_active from all
+      var next_year_count = parseInt(year_count) + 1;
+      updateDrawColor(next_year_count);
+    }
+    if (event.status == "FAILED") {
+      $("#status-logo").hide();
+    }
+  }
+  else {
+    console.log('Run status changed in a different run collection.')
+  }
+});
+
+//Send management to newly connected user
+{% comment %} 
+  chatSocket.on("update_user", (event) => {
+  console.log("user changed run collection")
+  console.log(event);
+  run_collection = event.run_collection;
+  const run_button = document.querySelector('#run_button_'+run_collection);
+  //run_button.dataset.activeUsers="shannon,chris";
+  //all_active_users = run_button.dataset.activeUsers;
+  console.log($("#run_button_"+run_collection).data("active-users"));
+  if ($("#run_button_"+run_collection).data("active-users")) {
+  var activeUserList = $("#run_button_"+run_collection).data("active-users").split(",");
+  }
+  else {
+   var activeUserList = [];
+  }
+
+  //console.log(storedArray);
+  activeUserList.push(event.user);
+  //console.log(storedArray);
+  //const filteredItems = storedArray.filter(item => item !== 'chris')
+  //console.log(filteredItems);
+  run_button.dataset.activeUsers=JSON.stringify(activeUserList);
+  console.log(run_button);
+
+}); {% endcomment %}
+
+function updateActiveUser(run_collection) {
+  console.log('Sending websocket message')
+  chatSocket.notify("update_user", {
+    user: '{{ user.username }}',
+    run_collection: run_collection,
+  })
+};
+
+//This function sends the polygon JSON via websocket 
+function sendJSONWebsocket() {
+  console.log('Sending websocket message')
+  const messageInputDom = document.querySelector('#id_management_polygons');
+  const management_polygons = messageInputDom.value;
+  chatSocket.notify("update_management", {
+      management_polygons: management_polygons,
+      run_collection: $('#id_run_collection').val(),
+    })
+  messageInputDom.value = ''; //should I remove this...?
+}
+
+//This function sends the polygon JSON via websocket 
+function getThisRunCollectionManagement(run_collection_id) {
+  console.log('Requesting management from server')
+  chatSocket.notify("send_management_request", {
+      run_collection: run_collection_id,
+    })
+}
+
+//Websocket close event
+chatSocket.on("close", (event) => {
+  console.log('Websocket closed.')
+});
+//Websocket open event
+chatSocket.on("open", (event) => {
+  console.log('Websocket opened.')
+});
+//Websocket error event
+chatSocket.on("error", (event) => {
+  console.log('Websocket error.')
+});
+
+
+//This function updates the GeoJSON management field 
+//and sends the websocket if needed
+function updateJSON() {
+  console.log("Updating management polygons JSON.");
+  var data = draw.getAll();
+  if (data.features.length > 0) {
+    // Stringify the GeoJson
+    var convertedData = JSON.stringify(data);
+  } else {
+    var convertedData = 0;
+  }
+  $('#id_management_polygons').val(convertedData);
+  sendJSONWebsocket();
+  updateDrawMetrics(); //consider removing this since it gets updated with the websocket message
+}
+
 $( document ).ready(function() {
-  updateJSON();
+  updateDrawMetrics();
   $( "#status-indicator" ).hide();
   $( "#status-indicator-shading" ).hide();
   relayout_buttons(max_number,max_area,max_cost);

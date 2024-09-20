@@ -46,8 +46,10 @@ class CaseStudyForm(forms.ModelForm):
 
     class Meta:
         model = CaseStudy
-        fields = ['name', 'description','number_of_pests','number_of_hosts','start_year','end_year','future_years',
-                'time_step']
+        fields = ['name', 'description','number_of_pests',
+                'number_of_hosts','time_step_unit','time_step_n',
+                'first_calibration_date','last_calibration_date',
+                'first_forecast_date','last_forecast_date']
 
     def __init__(self, *args, **kwargs):
         super(CaseStudyForm, self).__init__(*args, **kwargs)
@@ -61,7 +63,7 @@ class CaseStudyForm(forms.ModelForm):
 
     def clean(self):
         print("VALIDATING CASE STUDY FORM")
-        self.fields_required(['name','number_of_pests','number_of_hosts','start_year','end_year','time_step','future_years'])
+        self.fields_required(['name','number_of_pests','number_of_hosts'])
         first_year = self.cleaned_data.get("start_year")
         last_year = self.cleaned_data.get("end_year")
         final_sim_year = self.cleaned_data.get("future_years")
@@ -79,10 +81,10 @@ class SessionForm(forms.ModelForm):
     fields_required = fields_required_conditionally
     class Meta:
         model = Session
-        fields = ['case_study','name','description','reproductive_rate','distance_scale','final_year','management_month','weather'] 
+        fields = ['case_study','name','description','reproductive_rate','distance_scale','final_date','weather'] 
     
     def clean(self):
-        self.fields_required(['case_study','name','description','reproductive_rate','distance_scale','final_year','management_month','weather'])
+        self.fields_required(['case_study','name','description','reproductive_rate','distance_scale','final_date','weather'])
         return self.cleaned_data
 
     def __init__(self, *args, **kwargs):

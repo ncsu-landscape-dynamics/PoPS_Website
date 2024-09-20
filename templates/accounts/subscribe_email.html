@@ -24,6 +24,9 @@
           </div>
         </div>
         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+    <div class="g-recaptcha" data-sitekey="6Ld4FoYaAAAAAGNB0WwFf0T8hsoer9sM0bdJHjEB"></div>
+
 {% if form.errors %}
     {% for field in form %}
         {% for error in field.errors %}
@@ -38,7 +41,11 @@
         </div>
     {% endfor %}
 {% endif %}
-
+{% if error %}
+        <div class="text-danger">
+            Error: {{ error|escape }}
+        </div>
+{% endif %}
       </form>
     </div> <!-- Close main col -->
   </div>
